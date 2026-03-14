@@ -69,14 +69,14 @@ export function TeamBoard({ stats }: TeamStatsProps) {
                                         )}
                                     </div>
                                     <div className="space-y-1">
-                                        <p className={`text-lg font-black tracking-tight ${member.isNowIn ? 'text-primary' : 'text-zinc-600 dark:text-zinc-300'}`}>
+                                        <p className={`text-lg font-black tracking-tight ${member.isNowIn ? 'text-primary' : 'text-zinc-800 dark:text-zinc-100'}`}>
                                             {member.name}
                                         </p>
-                                        <p className="text-xs font-bold uppercase tracking-wider">
+                                        <p className="text-xs font-black uppercase tracking-wider">
                                             {member.isNowIn ? (
-                                                <span className="text-green-600">Přítomen</span>
+                                                <span className="text-green-700">Přítomen</span>
                                             ) : (
-                                                <span className="text-zinc-400">Nepřítomen</span>
+                                                <span className="text-zinc-500">Nepřítomen</span>
                                             )}
                                         </p>
                                     </div>
@@ -89,14 +89,14 @@ export function TeamBoard({ stats }: TeamStatsProps) {
                                                 <Loader2 className="h-4 w-4 animate-spin text-primary" />
                                             ) : (
                                                 <>
-                                                    <Clock className={`h-4 w-4 ${member.isNowIn ? 'text-primary' : 'text-zinc-300'}`} />
-                                                    <span className={member.isNowIn ? 'text-primary' : 'text-zinc-500'}>
+                                                    <Clock className={`h-4 w-4 ${member.isNowIn ? 'text-primary' : 'text-zinc-400'}`} />
+                                                    <span className={member.isNowIn ? 'text-primary font-black' : 'text-zinc-700 font-black'}>
                                                         {member.hours}h {member.minutes}m
                                                     </span>
                                                 </>
                                             )}
                                         </div>
-                                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Tento měsíc</p>
+                                        <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Tento měsíc</p>
                                     </div>
 
                                     <Button

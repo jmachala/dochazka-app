@@ -58,16 +58,16 @@ export function Weather() {
         <Card className="glass-card border-none overflow-hidden h-full">
             <CardContent className="p-6 h-full flex flex-col justify-center">
                 <div className="flex items-center gap-4">
-                    <div className="p-3 bg-white/10 rounded-2xl">
+                    <div className="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-2xl">
                         {getWeatherIcon(weather.code)}
                     </div>
                     <div>
-                        <p className="text-3xl font-black text-white">{weather.temp}°C</p>
-                        <p className="text-xs font-bold uppercase tracking-widest text-white/60">Uherský Brod</p>
+                        <p className="text-3xl font-black text-zinc-900 dark:text-zinc-100">{weather.temp}°C</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Uherský Brod</p>
                     </div>
                 </div>
-                <div className="mt-4 flex items-center gap-2 text-white/40">
-                    <p className="text-xs font-medium uppercase tracking-tighter">{getWeatherText(weather.code)}</p>
+                <div className="mt-4 flex items-center gap-2 text-zinc-500">
+                    <p className="text-xs font-bold uppercase tracking-wider">{getWeatherText(weather.code)}</p>
                 </div>
             </CardContent>
         </Card>
