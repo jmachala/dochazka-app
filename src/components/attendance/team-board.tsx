@@ -102,7 +102,7 @@ export function TeamBoard({ stats }: TeamStatsProps) {
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="h-10 w-10 rounded-xl bg-zinc-50 hover:bg-primary/10 hover:text-primary transition-colors border border-zinc-100"
+                                        className="h-10 w-10 rounded-xl bg-zinc-50 hover:bg-primary/10 hover:text-primary transition-colors border border-zinc-100 dark:bg-zinc-800 dark:border-zinc-700"
                                         asChild
                                         onClick={(e) => e.stopPropagation()}
                                     >

@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { TeamBoard } from '@/components/attendance/team-board'
 import { format, startOfMonth, endOfMonth, subMonths, addMonths } from 'date-fns'
 import { cs } from 'date-fns/locale'
+import { Badge } from '@/components/ui/badge'
 import { Weather } from '@/components/attendance/weather'
 import { LiveClock } from '@/components/attendance/live-clock'
 
@@ -42,7 +43,7 @@ export default async function AttendancePage({
     const teamStats = await getTeamStats()
 
     return (
-        <div className="flex min-h-screen flex-col bg-mesh">
+        <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-zinc-950">
             <header className="glass-nav sticky top-0 z-50">
                 <div className="mx-auto flex max-w-7xl items-center justify-between p-4 px-6">
                     <div className="flex items-center gap-4">
