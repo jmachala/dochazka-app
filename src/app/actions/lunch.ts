@@ -29,32 +29,32 @@ export async function getLunchMenus(): Promise<RestaurantMenu[]> {
         const buffer = await response.arrayBuffer()
         const html = iconv.decode(Buffer.from(buffer), 'win1250')
         const $ = cheerio.load(html)
-        const menus: RestaurantMenu[] = []
+        const menus: (RestaurantMenu & { phoneUrl?: string })[] = []
 
         $('.menicka_detail').each((i, el) => {
             const restaurantName = $(el).find('.hlavicka .nazev').text().trim()
             if (!restaurantName) return
 
-            let phone = ''
-            
-            // Try to find phone number in the description/info divs
+            // Look for the "zavolat" link
+            const callLink = $(el).find('.hlavicka .telefon a.zavolat').attr('href')
+            const phoneUrl = callLink ? (callLink.startsWith('.') ? `https://www.menicka.cz${callLink.substring(1)}` : callLink) : undefined
+
+            let phoneFromText = ''
+            // Keep the text-based backup search
             $(el).find('.menicka .gray .doplnujici_info').each((k, info) => {
                 const text = $(info).text()
                 const phoneMatch = text.match(/(?:tel\.|čísle:|tel:)\s*([\d\s]{9,15})/i)
-                if (phoneMatch && !phone) {
-                    phone = phoneMatch[1].trim()
+                if (phoneMatch && !phoneFromText) {
+                    phoneFromText = phoneMatch[1].trim()
                 }
             })
 
             const items: MenuItem[] = []
-            
             $(el).find('.menicka > div').each((j, div) => {
                 const className = $(div).attr('class') || ''
                 if (className.includes('nabidka')) {
                     const text = $(div).text().trim()
                     const price = $(div).next('.cena').text().trim()
-                    
-                    // If it has no preceding 'poradi' div, it's usually a soup
                     const isSoup = $(div).prev('div[class^="poradi"]').length === 0
                     
                     if (text && !text.includes('Nebylo zadáno') && !text.includes('Restaurace má tento den zavřeno')) {
@@ -67,11 +67,25 @@ export async function getLunchMenus(): Promise<RestaurantMenu[]> {
                 }
             })
 
-            // Only add if there are items for today
             if (items.length > 0) {
-                menus.push({ restaurantName, phone, items })
+                menus.push({ restaurantName, phone: phoneFromText, items, phoneUrl })
             }
         })
+
+        // Fetch phone numbers from URLs in parallel
+        await Promise.all(menus.map(async (menu) => {
+            if (menu.phoneUrl && !menu.phone) {
+                try {
+                    const phoneRes = await fetch(menu.phoneUrl, { next: { revalidate: 86400 } }) // Cache phone numbers for a day
+                    if (phoneRes.ok) {
+                        menu.phone = (await phoneRes.text()).trim()
+                    }
+                } catch (e) {
+                    console.error(`Failed to fetch phone for ${menu.restaurantName}`)
+                }
+            }
+            delete menu.phoneUrl
+        }))
 
         return menus
     } catch (error) {
