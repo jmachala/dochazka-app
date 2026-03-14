@@ -5,9 +5,9 @@ import { createClient } from '@/lib/supabase/server'
 export async function getTeamStats() {
     const supabase = await createClient()
 
-    // 1. Get all profiles
-    const { data: profiles } = await supabase
-        .from('profiles')
+    // 1. Get all employees
+    const { data: employees } = await supabase
+        .from('employees')
         .select('id, full_name')
         .order('full_name')
 
@@ -18,23 +18,13 @@ export async function getTeamStats() {
 
     const { data: attendance } = await supabase
         .from('attendance')
-        .select('user_id, check_in, check_out')
+        .select('employee_id, check_in, check_out')
         .gte('check_in', startOfMonth.toISOString())
 
-    // 3. Get active approved absences for today
-    const todayStr = new Date().toISOString().split('T')[0]
-    const { data: activeAbsences } = await supabase
-        .from('absences')
-        .select('user_id, type')
-        .eq('status', 'approved')
-        .lte('start_date', todayStr)
-        .gte('end_date', todayStr)
-
-    // 4. Aggregate
-    const stats = profiles?.map(profile => {
-        const userRecords = attendance?.filter(r => r.user_id === profile.id) || []
+    // 3. Aggregate
+    const stats = employees?.map(emp => {
+        const userRecords = attendance?.filter(r => r.employee_id === emp.id) || []
         const isNowIn = userRecords.some(r => !r.check_out)
-        const currentAbsence = activeAbsences?.find(a => a.user_id === profile.id)
 
         let totalMs = 0
         userRecords.forEach(r => {
@@ -47,10 +37,9 @@ export async function getTeamStats() {
         const minutes = Math.floor((totalMs % (1000 * 60 * 60)) / (1000 * 60))
 
         return {
-            id: profile.id,
-            name: profile.full_name,
+            id: emp.id,
+            name: emp.full_name,
             isNowIn,
-            currentAbsence: currentAbsence?.type || null,
             hours,
             minutes
         }
@@ -58,3 +47,32 @@ export async function getTeamStats() {
 
     return stats || []
 }
+
+export async function getEmployeeDetails(employeeId: string) {
+    const supabase = await createClient()
+
+    // 1. Employee Basic Info
+    const { data: employee } = await supabase
+        .from('employees')
+        .select('*')
+        .eq('id', employeeId)
+        .single()
+
+    // 2. Recent Attendance (last 30 days)
+    const thirtyDaysAgo = new Date()
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+    const { data: records } = await supabase
+        .from('attendance')
+        .select('*')
+        .eq('employee_id', employeeId)
+        .gte('check_in', thirtyDaysAgo.toISOString())
+        .order('check_in', { ascending: false })
+
+    return {
+        employee,
+        records: records || []
+    }
+}
+
+

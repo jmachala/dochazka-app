@@ -1,70 +1,123 @@
 'use client'
 
+import { toggleAttendance } from '@/app/actions/attendance'
+import { useTransition } from 'react'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+import { Loader2, Clock, BarChart3, Info } from 'lucide-react'
 import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Users, Clock } from 'lucide-react'
 import * as motion from 'framer-motion/client'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
 interface TeamStatsProps {
     stats: any[]
 }
 
 export function TeamBoard({ stats }: TeamStatsProps) {
+    const [isPending, startTransition] = useTransition()
+    const router = useRouter()
+
+    const handleToggle = (userId: string, name: string) => {
+        startTransition(async () => {
+            try {
+                await toggleAttendance(userId)
+                toast.success(`Status změněn: ${name}`)
+            } catch (error: any) {
+                toast.error(error.message || 'Něco se nepovedlo')
+            }
+        })
+    }
+
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    Týmový přehled (tento měsíc)
+                <h3 className="text-sm font-black text-zinc-400 uppercase tracking-[0.2em] flex items-center gap-3">
+                    <div className="h-1 w-8 bg-primary rounded-full" />
+                    Tým – Kliknutím se pípneš
                 </h3>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2">
                 {stats.map((member, index) => (
                     <motion.div
                         key={member.id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.05 }}
+                        className="relative group"
                     >
-                        <Card className="p-4 flex items-center justify-between bg-white border-zinc-100 dark:bg-zinc-900 dark:border-zinc-800">
-                            <div className="flex items-center gap-3">
-                                <div className="relative">
-                                    <div className="h-10 w-10 rounded-full bg-zinc-100 flex items-center justify-center text-sm font-bold dark:bg-zinc-800">
-                                        {member.name.charAt(0)}
-                                    </div>
-                                    {member.isNowIn && (
-                                        <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white dark:border-zinc-900" />
-                                    )}
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium">{member.name}</p>
-                                    <p className="text-xs text-zinc-500">
-                                        {member.isNowIn ? (
-                                            <span className="text-green-600 font-medium">Právě v práci</span>
-                                        ) : member.currentAbsence ? (
-                                            <span className="font-medium text-amber-600">
-                                                {member.currentAbsence === 'vacation' ? 'Dovolená' :
-                                                    member.currentAbsence === 'sick_leave' ? 'Nemocenská' :
-                                                        member.currentAbsence === 'home_office' ? 'Home Office' : 'Nepřítomen'}
-                                            </span>
-                                        ) : (
-                                            'Mimo kancelář'
+                        <button
+                            onClick={() => handleToggle(member.id, member.name)}
+                            disabled={isPending}
+                            className="w-full text-left transition-all active:scale-[0.98] disabled:opacity-70"
+                        >
+                            <Card className={`p-6 flex items-center justify-between transition-all duration-300 border-2 ${member.isNowIn
+                                ? 'bg-primary/5 border-primary shadow-lg shadow-primary/10'
+                                : 'bg-white border-transparent hover:border-zinc-200 dark:bg-zinc-900 dark:hover:border-zinc-700'
+                                }`}>
+                                <div className="flex items-center gap-4">
+                                    <div className="relative">
+                                        <div className={`h-14 w-14 rounded-2xl flex items-center justify-center text-xl font-black transition-colors ${member.isNowIn
+                                            ? 'bg-primary text-white'
+                                            : 'bg-zinc-100 text-zinc-400 dark:bg-zinc-800'
+                                            }`}>
+                                            {member.name.charAt(0)}
+                                        </div>
+                                        {member.isNowIn && (
+                                            <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-green-500 border-4 border-white dark:border-zinc-900 animate-pulse" />
                                         )}
-                                    </p>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className={`text-lg font-black tracking-tight ${member.isNowIn ? 'text-primary' : 'text-zinc-600 dark:text-zinc-300'}`}>
+                                            {member.name}
+                                        </p>
+                                        <p className="text-xs font-bold uppercase tracking-wider">
+                                            {member.isNowIn ? (
+                                                <span className="text-green-600">Přítomen</span>
+                                            ) : (
+                                                <span className="text-zinc-400">Nepřítomen</span>
+                                            )}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="text-right">
-                                <div className="flex items-center gap-1 text-sm font-bold justify-end">
-                                    <Clock className="h-3 w-3 text-zinc-400" />
-                                    {member.hours}h {member.minutes}m
+
+                                <div className="flex items-center gap-4">
+                                    <div className="flex flex-col items-end gap-1">
+                                        <div className="flex items-center gap-2 text-sm font-black">
+                                            {isPending ? (
+                                                <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                                            ) : (
+                                                <>
+                                                    <Clock className={`h-4 w-4 ${member.isNowIn ? 'text-primary' : 'text-zinc-300'}`} />
+                                                    <span className={member.isNowIn ? 'text-primary' : 'text-zinc-500'}>
+                                                        {member.hours}h {member.minutes}m
+                                                    </span>
+                                                </>
+                                            )}
+                                        </div>
+                                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Tento měsíc</p>
+                                    </div>
+
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-10 w-10 rounded-xl bg-zinc-50 hover:bg-primary/10 hover:text-primary transition-colors border border-zinc-100"
+                                        asChild
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <Link href={`/attendance/${member.id}`}>
+                                            <BarChart3 className="h-5 w-5" />
+                                        </Link>
+                                    </Button>
                                 </div>
-                                <p className="text-[10px] text-zinc-400 uppercase tracking-wider">Celkem</p>
-                            </div>
-                        </Card>
+                            </Card>
+                        </button>
                     </motion.div>
                 ))}
             </div>
         </div>
     )
 }
+
+

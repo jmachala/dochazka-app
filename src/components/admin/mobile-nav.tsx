@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Calendar, Users, Clock, UserCircle, LogOut, Menu, History as HistoryIcon, Palmtree, Settings } from 'lucide-react'
+import { Calendar, Users, Clock, UserCircle, LogOut, Menu, History as HistoryIcon, Settings } from 'lucide-react'
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
@@ -18,7 +18,6 @@ export function MobileNav({ profile }: MobileNavProps) {
         { href: '/admin/employees', icon: Users, label: 'Zaměstnanci' },
         { href: '/admin/records', icon: Clock, label: 'Všechny záznamy' },
         { href: '/admin/reports', icon: HistoryIcon, label: 'Měsíční přehled' },
-        { href: '/admin/absences', icon: Palmtree, label: 'Absence' },
         { href: '/settings', icon: Settings, label: 'Nastavení' },
     ]
 

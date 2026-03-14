@@ -33,7 +33,7 @@ export default async function EmployeesPage() {
     }
 
     const { data: employees } = await supabase
-        .from('profiles')
+        .from('employees')
         .select('*')
         .order('full_name')
 
@@ -76,17 +76,10 @@ export default async function EmployeesPage() {
                                                         {emp.id === user.id && <Badge variant="secondary" className="text-[9px] h-4">To jste vy</Badge>}
                                                     </div>
                                                     <div className="flex items-center gap-2 mt-0.5">
-                                                        {emp.role === 'admin' ? (
-                                                            <Badge variant="outline" className="text-[10px] h-5 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400 flex gap-1 items-center border-none">
-                                                                <Shield className="h-3 w-3" />
-                                                                Administrátor
-                                                            </Badge>
-                                                        ) : (
-                                                            <Badge variant="outline" className="text-[10px] h-5 bg-zinc-100 dark:bg-zinc-800 flex gap-1 items-center border-none">
-                                                                <UserCircle className="h-3 w-3 text-zinc-500" />
-                                                                Zaměstnanec
-                                                            </Badge>
-                                                        )}
+                                                        <Badge variant="outline" className="text-[10px] h-5 bg-zinc-100 dark:bg-zinc-800 flex gap-1 items-center border-none">
+                                                            <UserCircle className="h-3 w-3 text-zinc-500" />
+                                                            Osoba
+                                                        </Badge>
                                                     </div>
                                                 </div>
                                             </div>
@@ -98,14 +91,9 @@ export default async function EmployeesPage() {
                                                     </Link>
                                                 </Button>
 
-                                                {emp.id !== user.id && (
-                                                    <RoleToggleButton id={emp.id} currentRole={emp.role} />
-                                                )}
-
-                                                {emp.id !== user.id && (
-                                                    <DeleteProfileButton id={emp.id} />
-                                                )}
+                                                <DeleteProfileButton id={emp.id} />
                                             </div>
+
                                         </div>
                                     ))
                                 ) : (

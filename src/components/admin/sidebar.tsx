@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Users, Calendar, Clock, UserCircle, LogOut, History as HistoryIcon, Palmtree, Settings } from 'lucide-react'
+import { Users, Calendar, Clock, UserCircle, LogOut, History as HistoryIcon, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -14,10 +14,9 @@ export function AdminSidebar({ profile }: SidebarProps) {
 
     const navItems = [
         { href: '/admin', icon: Calendar, label: 'Přehled' },
-        { href: '/admin/employees', icon: Users, label: 'Zaměstnanci' },
+        { href: '/admin/employees', icon: Users, label: 'Správa lidí' },
         { href: '/admin/records', icon: Clock, label: 'Všechny záznamy' },
         { href: '/admin/reports', icon: HistoryIcon, label: 'Měsíční přehled' },
-        { href: '/admin/absences', icon: Palmtree, label: 'Absence' },
         { href: '/settings', icon: Settings, label: 'Nastavení' },
     ]
 
@@ -51,10 +50,11 @@ export function AdminSidebar({ profile }: SidebarProps) {
                         <Button variant="ghost" className="w-full justify-start text-primary hover:text-primary hover:bg-primary/5" asChild>
                             <Link href="/attendance">
                                 <UserCircle className="mr-2 h-4 w-4" />
-                                Moje docházka
+                                Přejít k terminálu
                             </Link>
                         </Button>
                     </div>
+
                 </nav>
 
                 <div className="mt-auto pt-6 border-t border-zinc-200 dark:border-zinc-800">

@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Trash2 } from 'lucide-react'
-import { deleteProfile } from '@/app/actions/profiles'
+import { deleteEmployee } from '@/app/actions/profiles'
 import { toast } from 'sonner'
 
 interface DeleteProfileButtonProps {
@@ -11,17 +11,18 @@ interface DeleteProfileButtonProps {
 
 export function DeleteProfileButton({ id }: DeleteProfileButtonProps) {
     async function handleDelete() {
-        if (!confirm('Opravdu chcete smazat tohoto uživatele? Tato akce smaže i všechna jeho data o docházce.')) {
+        if (!confirm('Opravdu chcete smazat tuto osobu? Tato akce smaže i všechna data o její docházce.')) {
             return
         }
 
         try {
-            await deleteProfile(id)
-            toast.success('Uživatel byl smazán')
+            await deleteEmployee(id)
+            toast.success('Osoba byla smazána')
         } catch (error) {
-            toast.error('Nepodařilo se smazat uživatele')
+            toast.error('Nepodařilo se smazat osobu')
         }
     }
+
 
     return (
         <Button

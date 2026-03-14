@@ -36,7 +36,7 @@ export default async function EmployeeDetailPage({
 
     // Fetch employee data
     const { data: employee, error } = await supabase
-        .from('profiles')
+        .from('employees')
         .select('*')
         .eq('id', id)
         .single()
@@ -47,15 +47,11 @@ export default async function EmployeeDetailPage({
     const { data: records } = await supabase
         .from('attendance')
         .select('*')
-        .eq('user_id', id)
+        .eq('employee_id', id)
         .order('check_in', { ascending: false })
 
-    // Fetch absences
-    const { data: absences } = await supabase
-        .from('absences')
-        .select('*')
-        .eq('user_id', id)
-        .order('start_date', { ascending: false })
+
+
 
     // Calculations
     const totalRecords = records?.length || 0
@@ -88,18 +84,7 @@ export default async function EmployeeDetailPage({
                         <PrintButton />
                     </div>
 
-                    <div className="grid gap-6 md:grid-cols-3 mb-8">
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-sm font-medium text-zinc-500 uppercase">Role</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex items-center gap-2">
-                                    <Shield className="h-4 w-4 text-primary" />
-                                    <span className="text-2xl font-bold capitalize">{employee.role === 'admin' ? 'Administrátor' : 'Zaměstnanec'}</span>
-                                </div>
-                            </CardContent>
-                        </Card>
+                    <div className="grid gap-6 md:grid-cols-2 mb-8">
                         <Card>
                             <CardHeader className="pb-2">
                                 <CardTitle className="text-sm font-medium text-zinc-500 uppercase">Celkem odpracováno</CardTitle>
@@ -123,6 +108,7 @@ export default async function EmployeeDetailPage({
                             </CardContent>
                         </Card>
                     </div>
+
 
                     <AttendanceChart records={records || []} />
 
@@ -178,55 +164,7 @@ export default async function EmployeeDetailPage({
                             </CardContent>
                         </Card>
 
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Absence a dovolené</CardTitle>
-                                <CardDescription>Přehled neschopenek a dovolených.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="p-0">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Typ</TableHead>
-                                            <TableHead>Termín</TableHead>
-                                            <TableHead>Dní</TableHead>
-                                            <TableHead>Stav</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {absences && absences.length > 0 ? (
-                                            absences.map((abs) => (
-                                                <TableRow key={abs.id}>
-                                                    <TableCell className="font-medium capitalize">
-                                                        {abs.type === 'vacation' ? 'Dovolená' :
-                                                            abs.type === 'sick_leave' ? 'Nemoc' :
-                                                                abs.type === 'home_office' ? 'Home Office' : 'Jiný'}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {format(new Date(abs.start_date), 'd. M.')} - {format(new Date(abs.end_date), 'd. M. yyyy')}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {Math.ceil((new Date(abs.end_date).getTime() - new Date(abs.start_date).getTime()) / (1000 * 60 * 60 * 24)) + 1}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Badge variant={abs.status === 'approved' ? 'default' : abs.status === 'pending' ? 'outline' : 'destructive'}>
-                                                            {abs.status === 'approved' ? 'Schváleno' :
-                                                                abs.status === 'pending' ? 'Čeká' : 'Zamítnuto'}
-                                                        </Badge>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))
-                                        ) : (
-                                            <TableRow>
-                                                <TableCell colSpan={4} className="h-24 text-center text-zinc-500">
-                                                    Žádné absence k dispozici.
-                                                </TableCell>
-                                            </TableRow>
-                                        )}
-                                    </TableBody>
-                                </Table>
-                            </CardContent>
-                        </Card>
+
                     </div>
                 </div>
             </main>

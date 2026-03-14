@@ -18,15 +18,14 @@ export function AddEmployeeDialog() {
         setLoading(true)
 
         const formData = new FormData(e.currentTarget)
-        const email = formData.get('email') as string
         const fullName = formData.get('fullName') as string
 
         try {
-            await createEmployee(email, fullName)
-            toast.success('Zaměstnanec byl úspěšně vytvořen')
+            await createEmployee(fullName)
+            toast.success('Osoba byla úspěšně vytvořena')
             setOpen(false)
         } catch (error: any) {
-            toast.error(error.message || 'Nepodařilo se vytvořit zaměstnance')
+            toast.error(error.message || 'Nepodařilo se vytvořit záznam')
         } finally {
             setLoading(false)
         }
@@ -35,31 +34,27 @@ export function AddEmployeeDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button>
+                <Button className="rounded-xl shadow-lg shadow-primary/20">
                     <Plus className="mr-2 h-4 w-4" />
-                    Přidat zaměstnance
+                    Přidat osobu k pípání
                 </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="rounded-2xl">
                 <DialogHeader>
-                    <DialogTitle>Nový zaměstnanec</DialogTitle>
+                    <DialogTitle>Přidat novou osobu</DialogTitle>
                     <DialogDescription>
-                        Vytvořte účet pro nového kolegu. Dočasné heslo bude nastaveno na: <code className="bg-zinc-100 px-1 rounded">Password123!</code>
+                        Zadejte jméno osoby, která se bude moci pípat na terminálu.
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4 pt-4">
                     <div className="space-y-2">
                         <Label htmlFor="fullName">Celé jméno</Label>
-                        <Input id="fullName" name="fullName" placeholder="Jan Novák" required />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input id="email" name="email" type="email" placeholder="jan.novak@firma.cz" required />
+                        <Input id="fullName" name="fullName" placeholder="Jan Novák" className="rounded-xl" required />
                     </div>
                     <DialogFooter className="pt-4">
-                        <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Zrušit</Button>
-                        <Button type="submit" disabled={loading}>
-                            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Vytvořit účet'}
+                        <Button type="button" variant="ghost" className="rounded-xl" onClick={() => setOpen(false)}>Zrušit</Button>
+                        <Button type="submit" className="rounded-xl" disabled={loading}>
+                            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Přidat osobu'}
                         </Button>
                     </DialogFooter>
                 </form>

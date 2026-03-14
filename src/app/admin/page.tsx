@@ -91,29 +91,6 @@ export default async function AdminDashboard() {
         .order('check_in', { ascending: false })
         .limit(10)
 
-    // 6. People on Absence today
-    const todayStr = new Date().toISOString().split('T')[0]
-    const { data: absencesToday } = await supabase
-        .from('absences')
-        .select(`
-            type,
-            profiles (
-                full_name
-            )
-        `)
-        .eq('status', 'approved')
-        .lte('start_date', todayStr)
-        .gte('end_date', todayStr)
-
-    const getAbsenceLabel = (type: string) => {
-        switch (type) {
-            case 'vacation': return 'Dovolená'
-            case 'sick_leave': return 'Nemocenská'
-            case 'home_office': return 'Home Office'
-            default: return 'Jiné'
-        }
-    }
-
     return (
         <main className="flex-1 p-4 md:p-8 bg-mesh min-h-screen">
             <div className="mx-auto max-w-6xl">
@@ -166,8 +143,8 @@ export default async function AdminDashboard() {
                     </Card>
                 </div>
 
-                <div className="grid gap-8 lg:grid-cols-3">
-                    <Card className="lg:col-span-2 glass-card border-none shadow-2xl ring-1 ring-white/10">
+                <div className="grid gap-8 lg:grid-cols-1">
+                    <Card className="glass-card border-none shadow-2xl ring-1 ring-white/10">
                         <CardHeader className="border-b border-zinc-100 dark:border-zinc-800/50 pb-6">
                             <CardTitle className="text-lg font-bold">Živý deník aktivit</CardTitle>
                             <CardDescription className="font-medium">Posledních 10 interakcí se systémem napříč firmou</CardDescription>
@@ -207,38 +184,6 @@ export default async function AdminDashboard() {
                                 ) : (
                                     <div className="text-center py-12 text-zinc-500">
                                         <p>Zatím nebyly nalezeny žádné záznamy.</p>
-                                    </div>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="glass-card border-none shadow-2xl ring-1 ring-white/10">
-                        <CardHeader className="border-b border-zinc-100 dark:border-zinc-800/50 pb-6">
-                            <CardTitle className="text-lg font-bold">Dnešní Absence</CardTitle>
-                            <CardDescription className="font-medium">Kolegové, kteří dnes čerpají volno</CardDescription>
-                        </CardHeader>
-                        <CardContent className="pt-6">
-                            <div className="space-y-4">
-                                {absencesToday && absencesToday.length > 0 ? (
-                                    absencesToday.map((abs: any, i) => (
-                                        <div key={i} className="flex items-center justify-between py-2 border-b last:border-0 dark:border-zinc-800">
-                                            <div className="flex items-center gap-3">
-                                                <div className="h-8 w-8 rounded-full bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center">
-                                                    <Palmtree className="h-4 w-4 text-amber-600" />
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm font-medium truncate">{(abs.profiles as any)?.full_name}</p>
-                                                    <p className="text-[10px] uppercase tracking-wider text-amber-600 font-bold">
-                                                        {getAbsenceLabel(abs.type)}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div className="text-center py-12 text-zinc-500">
-                                        <p className="text-xs">Dnes nikdo nečerpá volno.</p>
                                     </div>
                                 )}
                             </div>
