@@ -11,6 +11,7 @@ export interface MenuItem {
 
 export interface RestaurantMenu {
     restaurantName: string;
+    phone?: string;
     items: MenuItem[];
 }
 
@@ -33,6 +34,17 @@ export async function getLunchMenus(): Promise<RestaurantMenu[]> {
         $('.menicka_detail').each((i, el) => {
             const restaurantName = $(el).find('.hlavicka .nazev').text().trim()
             if (!restaurantName) return
+
+            let phone = ''
+            
+            // Try to find phone number in the description/info divs
+            $(el).find('.menicka .gray .doplnujici_info').each((k, info) => {
+                const text = $(info).text()
+                const phoneMatch = text.match(/(?:tel\.|čísle:|tel:)\s*([\d\s]{9,15})/i)
+                if (phoneMatch && !phone) {
+                    phone = phoneMatch[1].trim()
+                }
+            })
 
             const items: MenuItem[] = []
             
@@ -57,7 +69,7 @@ export async function getLunchMenus(): Promise<RestaurantMenu[]> {
 
             // Only add if there are items for today
             if (items.length > 0) {
-                menus.push({ restaurantName, items })
+                menus.push({ restaurantName, phone, items })
             }
         })
 

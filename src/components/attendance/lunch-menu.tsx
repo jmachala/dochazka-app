@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { UtensilsCrossed } from 'lucide-react'
+import { UtensilsCrossed, Phone } from 'lucide-react'
 import { type RestaurantMenu, getLunchMenus } from '@/app/actions/lunch'
 
 export function LunchMenu() {
@@ -59,9 +59,17 @@ export function LunchMenu() {
                 <div className="space-y-6 animate-in fade-in duration-1000">
                     {menus.map((menu, idx) => (
                         <div key={idx} className="space-y-2">
-                            <h3 className="text-sm font-bold text-primary border-b border-primary/20 pb-1 sticky top-0 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-sm z-10 py-1">
-                                {menu.restaurantName}
-                            </h3>
+                            <div className="sticky top-0 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-sm z-10 py-1 border-b border-primary/20 flex justify-between items-end">
+                                <h3 className="text-sm font-bold text-primary">
+                                    {menu.restaurantName}
+                                </h3>
+                                {menu.phone && (
+                                    <div className="flex items-center gap-1 text-[10px] font-black text-zinc-500 mb-0.5">
+                                        <Phone className="w-2.5 h-2.5 text-zinc-400" />
+                                        <span>{menu.phone}</span>
+                                    </div>
+                                )}
+                            </div>
                             <ul className="space-y-2">
                                 {menu.items.map((item, i) => (
                                     <li key={i} className={`flex justify-between items-start text-xs ${item.isSoup ? 'text-zinc-500 italic' : 'text-zinc-700 dark:text-zinc-300'} gap-2`}>
