@@ -64,13 +64,10 @@ export function LunchMenu() {
                                     {menu.restaurantName}
                                 </h3>
                                 {menu.phone && (
-                                    <a 
-                                        href={`tel:${menu.phone.replace(/\s+/g, '')}`} 
-                                        className="flex items-center gap-1 text-[10px] font-black text-zinc-500 mb-0.5 hover:text-primary transition-colors"
-                                    >
+                                    <div className="flex items-center gap-1 text-[10px] font-black text-zinc-500 mb-0.5">
                                         <Phone className="w-2.5 h-2.5 text-zinc-400" />
                                         <span>{menu.phone}</span>
-                                    </a>
+                                    </div>
                                 )}
                             </div>
                             <ul className="space-y-2">
