@@ -76,9 +76,15 @@ export async function getLunchMenus(): Promise<RestaurantMenu[]> {
         await Promise.all(menus.map(async (menu) => {
             if (menu.phoneUrl && !menu.phone) {
                 try {
-                    const phoneRes = await fetch(menu.phoneUrl, { next: { revalidate: 86400 } }) // Cache phone numbers for a day
+                    const phoneRes = await fetch(menu.phoneUrl, { next: { revalidate: 86400 } })
                     if (phoneRes.ok) {
-                        menu.phone = (await phoneRes.text()).trim()
+                        const rawHtml = await phoneRes.text()
+                        // The endpoint returns a fragment of HTML, parse it to get the number
+                        const $phone = cheerio.load(rawHtml)
+                        const extractedPhone = $phone('.kontakt span').text().trim()
+                        if (extractedPhone) {
+                            menu.phone = extractedPhone
+                        }
                     }
                 } catch (e) {
                     console.error(`Failed to fetch phone for ${menu.restaurantName}`)
