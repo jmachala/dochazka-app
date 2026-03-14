@@ -8,7 +8,6 @@ import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import Link from 'next/link'
 import { DeleteProfileButton } from '@/components/admin/delete-profile-button'
-import { RoleToggleButton } from '@/components/admin/role-toggle-button'
 import { AddEmployeeDialog } from '@/components/admin/add-employee-dialog'
 
 export default async function EmployeesPage() {
