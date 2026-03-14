@@ -36,53 +36,11 @@ export default async function AttendancePage({
         .eq('id', user.id)
         .single()
 
-    // Date Logic
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-
-    // Month picker logic for History tab
-    const selectedMonth = month ? new Date(month) : new Date()
-    const start = startOfMonth(selectedMonth)
-    const end = endOfMonth(selectedMonth)
-    const prevMonth = format(subMonths(start, 1), 'yyyy-MM')
-    const nextMonth = format(addMonths(start, 1), 'yyyy-MM')
-
-    // Fetch records for the selected month to show in history
-    const { data: monthAttendance } = await supabase
-        .from('attendance')
-        .select('*')
-        .eq('user_id', user.id)
-        .gte('check_in', start.toISOString())
-        .lte('check_in', end.toISOString())
-        .order('check_in', { ascending: false })
 
 
 
-    // Helper to calculate hours
-    const calculateTotalHours = (records: any[]) => {
-        let totalMs = 0
-        records?.forEach(r => {
-            if (r.check_in && r.check_out) {
-                totalMs += new Date(r.check_out).getTime() - new Date(r.check_in).getTime()
-            }
-        })
-        const hours = Math.floor(totalMs / (1000 * 60 * 60))
-        const minutes = Math.floor((totalMs % (1000 * 60 * 60)) / (1000 * 60))
-        return { hours, minutes }
-    }
 
-    // Stats for Today (always based on current real today)
-    const realstartOfMonth = startOfMonth(new Date())
-    const { data: currentMonthAttendance } = await supabase
-        .from('attendance')
-        .select('id, check_in, check_out, notes')
-        .eq('user_id', user.id)
-        .gte('check_in', realstartOfMonth.toISOString())
 
-    const { hours: monthHours, minutes: monthMins } = calculateTotalHours(currentMonthAttendance || [])
-    const todayAttendance = currentMonthAttendance?.filter(r => new Date(r.check_in) >= today) || []
-    const { hours: todayHours, minutes: todayMins } = calculateTotalHours(todayAttendance)
-    const activeRecord = todayAttendance?.find(r => !r.check_out)
 
     // Fetch team stats for the public board
     const teamStats = await getTeamStats()

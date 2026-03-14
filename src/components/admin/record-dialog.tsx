@@ -39,7 +39,7 @@ export function RecordDialog({ employees, record, trigger }: RecordDialogProps) 
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
 
-    const [userId, setUserId] = useState(record?.user_id || '')
+    const [employeeId, setEmployeeId] = useState(record?.employee_id || '')
     const [date, setDate] = useState<Date | undefined>(record ? new Date(record.check_in) : new Date())
     const [checkInTime, setCheckInTime] = useState(record ? format(new Date(record.check_in), 'HH:mm') : '08:00')
     const [checkOutTime, setCheckOutTime] = useState(record?.check_out ? format(new Date(record.check_out), 'HH:mm') : '')
@@ -47,7 +47,7 @@ export function RecordDialog({ employees, record, trigger }: RecordDialogProps) 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!userId || !date || !checkInTime) {
+        if (!employeeId || !date || !checkInTime) {
             toast.error('Prosim vyplňte všechna povinná pole.')
             return
         }
@@ -80,7 +80,7 @@ export function RecordDialog({ employees, record, trigger }: RecordDialogProps) 
                 toast.success('Záznam byl aktualizován.')
             } else {
                 await adminCreateRecord({
-                    user_id: userId,
+                    employee_id: employeeId,
                     check_in: checkInDate.toISOString(),
                     check_out: checkOutDate?.toISOString(),
                     notes
@@ -117,8 +117,8 @@ export function RecordDialog({ employees, record, trigger }: RecordDialogProps) 
                         <Label>Zaměstnanec</Label>
                         <Select
                             disabled={!!record || loading}
-                            onValueChange={setUserId}
-                            defaultValue={userId}
+                            onValueChange={setEmployeeId}
+                            defaultValue={employeeId}
                         >
                             <SelectTrigger>
                                 <SelectValue placeholder="Vyberte zaměstnance" />

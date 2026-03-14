@@ -41,10 +41,10 @@ export default async function AdminReportsPage({
     const { data: records } = await supabase
         .from('attendance')
         .select(`
-      user_id,
+      employee_id,
       check_in,
       check_out,
-      profiles (
+      employees (
         full_name
       )
     `)
@@ -52,13 +52,13 @@ export default async function AdminReportsPage({
         .lte('check_in', end.toISOString())
 
     const { data: employees } = await supabase
-        .from('profiles')
+        .from('employees')
         .select('id, full_name')
         .order('full_name')
 
     // Aggregate hours per employee
     const employeeSummaries = employees?.map(emp => {
-        const empRecords = records?.filter(r => r.user_id === emp.id) || []
+        const empRecords = records?.filter(r => r.employee_id === emp.id) || []
         let totalMs = 0
         empRecords.forEach(r => {
             if (r.check_in && r.check_out) {

@@ -40,43 +40,20 @@ export default async function AdminDashboard() {
 
     // 2. Total employees
     const { count: totalEmployees } = await supabase
-        .from('profiles')
+        .from('employees')
         .select('*', { count: 'exact', head: true })
 
     // 3. Today's unique attendees
     const { data: todayRecords } = await supabase
         .from('attendance')
-        .select('user_id')
+        .select('employee_id')
         .gte('check_in', today.toISOString())
 
-    const uniqueAttendees = new Set(todayRecords?.map(r => r.user_id)).size
+    const uniqueAttendees = new Set(todayRecords?.map(r => r.employee_id)).size
 
-    // 4. Admin's personal stats for Today & Month
-    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).toISOString()
 
-    const { data: adminMonthRecords } = await supabase
-        .from('attendance')
-        .select('check_in, check_out')
-        .eq('user_id', user.id)
-        .gte('check_in', startOfMonth)
 
-    const calculateTotalHours = (records: any[]) => {
-        let totalMs = 0
-        records?.forEach(r => {
-            if (r.check_in && r.check_out) {
-                totalMs += new Date(r.check_out).getTime() - new Date(r.check_in).getTime()
-            }
-        })
-        const hours = Math.floor(totalMs / (1000 * 60 * 60))
-        const minutes = Math.floor((totalMs % (1000 * 60 * 60)) / (1000 * 60))
-        return { hours, minutes }
-    }
-
-    const { hours: monthHours, minutes: monthMins } = calculateTotalHours(adminMonthRecords || [])
-    const todayPersonalRecords = adminMonthRecords?.filter(r => new Date(r.check_in) >= today) || []
-    const { hours: todayHours, minutes: todayMins } = calculateTotalHours(todayPersonalRecords)
-
-    // 5. Last 10 activities with profile info
+    // 4. Last 10 activities with employee info
     const { data: activities } = await supabase
         .from('attendance')
         .select(`
@@ -84,7 +61,7 @@ export default async function AdminDashboard() {
             check_in,
             check_out,
             notes,
-            profiles (
+            employees (
                 full_name
             )
         `)
@@ -114,31 +91,13 @@ export default async function AdminDashboard() {
                             <p className="text-xs font-medium text-zinc-500 italic">z celkem {totalEmployees || 0} kolegů</p>
                         </CardContent>
                     </Card>
-                    <Card className="glass-card border-none ring-1 ring-white/20">
+                    <Card className="glass-card border-none ring-1 ring-white/20 sm:col-span-2">
                         <CardHeader className="pb-2">
                             <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Dnes přišlo</CardDescription>
                             <CardTitle className="text-4xl font-black text-gradient">{uniqueAttendees || 0}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <p className="text-xs font-medium text-zinc-500 italic">unikátních osob</p>
-                        </CardContent>
-                    </Card>
-                    <Card className="glass-card border-none ring-1 ring-white/20">
-                        <CardHeader className="pb-2">
-                            <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Můj čas (dnes)</CardDescription>
-                            <CardTitle className="text-4xl font-black">{todayHours}h {todayMins}m</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-xs font-medium text-zinc-500 italic">osobní aktivita</p>
-                        </CardContent>
-                    </Card>
-                    <Card className="glass-card border-none ring-1 ring-white/20">
-                        <CardHeader className="pb-2">
-                            <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Můj čas (měsíc)</CardDescription>
-                            <CardTitle className="text-4xl font-black">{monthHours}h {monthMins}m</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-xs font-medium text-zinc-500 italic">souhrn za {format(new Date(), 'MMMM', { locale: cs })}</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -159,7 +118,7 @@ export default async function AdminDashboard() {
                                                     {activity.check_out ? <ArrowDownLeft className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <p className="text-sm font-bold truncate text-zinc-900 dark:text-zinc-100">{activity.profiles?.full_name}</p>
+                                                    <p className="text-sm font-bold truncate text-zinc-900 dark:text-zinc-100">{activity.employees?.full_name}</p>
                                                     <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
                                                         {activity.check_out ? 'Odchod ze systému' : 'Vstup do systému'}
                                                     </p>

@@ -18,7 +18,7 @@ async function ensureAdmin() {
 }
 
 export async function adminCreateRecord(data: {
-    user_id: string
+    employee_id: string
     check_in: string
     check_out?: string
     notes?: string

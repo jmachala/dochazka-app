@@ -37,7 +37,7 @@ export default async function AdminRecordsPage() {
         .from('attendance')
         .select(`
       *,
-      profiles (
+      employees (
         id,
         full_name
       )
@@ -46,7 +46,7 @@ export default async function AdminRecordsPage() {
 
     // Fetch employees for the Add/Edit dialog
     const { data: employees } = await supabase
-        .from('profiles')
+        .from('employees')
         .select('id, full_name')
         .order('full_name')
 
@@ -100,7 +100,7 @@ export default async function AdminRecordsPage() {
                                         return (
                                             <TableRow key={record.id}>
                                                 <TableCell className="font-medium">
-                                                    {record.profiles?.full_name}
+                                                    {record.employees?.full_name}
                                                 </TableCell>
                                                 <TableCell>
                                                     {format(checkInDate, 'dd. MM. yyyy', { locale: cs })}
