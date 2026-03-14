@@ -15,6 +15,7 @@ import { cs } from 'date-fns/locale'
 import { Badge } from '@/components/ui/badge'
 import { Weather } from '@/components/attendance/weather'
 import { LiveClock } from '@/components/attendance/live-clock'
+import { LunchMenu } from '@/components/attendance/lunch-menu'
 
 export default async function AttendancePage({
     searchParams,
@@ -76,7 +77,8 @@ export default async function AttendancePage({
                     {/* Left Column */}
                     <div className="lg:col-span-1 space-y-6">
                         <Weather />
-                        <Card className="glass-card border-none p-6 shadow-sm">
+                        <LunchMenu />
+                        <Card className="glass-card border-none p-6 shadow-sm hidden md:block">
                             <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-4 text-center">Inspirace dne</p>
                             <p className="text-sm font-bold italic text-center text-zinc-800 dark:text-zinc-200 leading-relaxed">"Píle je matkou štěstí."</p>
                         </Card>
